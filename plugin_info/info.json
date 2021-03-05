@@ -1,0 +1,14 @@
+{
+    "id": "huaweilte",
+    "name": "Huawei LTE",
+    "description": {
+        "fr_FR": "Plugin pour les Modems Huawei LAN/WAN LTE",
+        "en_US": "Plugin for Huawei LAN/WAN LTE Modems"
+    },
+    "licence": "GPL",
+    "author": "Garcia MICHEL",
+    "require": "3.3.39",
+    "category": "communication",
+    "hasDependency": true,
+    "hasOwnDeamon": true
+}

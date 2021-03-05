@@ -1,2 +1,3 @@
-# jeedom-huawei-lte
+# About
 
+Jeedom plugin for Huawei LAN/WAN LTE Modems.
