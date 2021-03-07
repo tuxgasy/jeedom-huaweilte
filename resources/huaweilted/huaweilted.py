@@ -30,10 +30,20 @@ except ImportError:
 	sys.exit(1)
 
 def listen():
+    jeedom_socket.open()
+    logging.debug("Start listening...")
+
     try:
         while 1:
             connection = AuthorizedConnection(_device_url)
             client = Client(connection)
+
+            smsCount = client.sms.sms_count()
+            logging.debug('SMS Count : ' + str(smsCount))
+
+            if smsCount.LocalUnread > 0:
+                smsList = client.sms.get_sms_list()
+                logging.debug('SMS List : ' + str(smsList))
 
             time.sleep(0.5)
     except KeyboardInterrupt:
@@ -75,12 +85,16 @@ _socket_port = 55100
 _socket_host = 'localhost'
 _device_url = 'http://192.168.8.1/'
 _pidfile = '/tmp/huaweilted.pid'
+_apikey = ''
+_callback = ''
 
 parser = argparse.ArgumentParser(description='Huawei LTE Daemon for Jeedom plugin')
 parser.add_argument("--loglevel", help="Log Level for the daemon", type=str)
 parser.add_argument("--socketport", help="Socketport for server", type=str)
 parser.add_argument("--deviceurl", help="Device URL", type=str)
 parser.add_argument("--pid", help="Pid file", type=str)
+parser.add_argument("--apikey", help="Apikey", type=str)
+parser.add_argument("--callback", help="Callback", type=str)
 args = parser.parse_args()
 
 if args.loglevel:
@@ -91,6 +105,10 @@ if args.deviceurl:
     _device_url = args.deviceurl
 if args.pid:
     _pidfile = args.pid
+if args.apikey:
+    _apikey = args.apikey
+if args.callback:
+    _callback = args.callback
 
 _socket_port = int(_socket_port)
 jeedom_utils.set_log_level(_log_level)
@@ -106,6 +124,12 @@ signal.signal(signal.SIGTERM, handler)
 
 try:
     jeedom_utils.write_pid(str(_pidfile))
+
+    jeedom_com = jeedom_com(apikey = _apikey, url = _callback)
+    if not jeedom_com.test():
+        logging.error('Network communication issues. Please fixe your Jeedom network configuration.')
+        shutdown()
+
     jeedom_socket = jeedom_socket(port=_socket_port, address=_socket_host)
     listen()
 except Exception as e:
