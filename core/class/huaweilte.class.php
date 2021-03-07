@@ -23,7 +23,7 @@ class huaweilte extends eqLogic {
     public static function dependancy_info() {
         $return = array();
         $return['progress_file'] = jeedom::getTmpFolder(__CLASS__).'/dependance';
-        if (exec(system::getCmdSudo() . ' python3 -c "import huawei_lte_api"; echo $') == 0) {
+        if (exec(system::getCmdSudo() . ' python3 -c "import huawei_lte_api"; echo $?') == 0) {
             $return['state'] = 'ok';
         } else {
             $return['state'] = 'nok';
