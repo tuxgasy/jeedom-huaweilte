@@ -17,7 +17,7 @@
  */
 require_once dirname(__FILE__) . "/../../../../core/php/core.inc.php";
 
-if (!jeedom::apiAccess(init('apikey'), 'huawelte')) {
+if (!jeedom::apiAccess(init('apikey'), 'huaweilte')) {
     echo __('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
     die();
 }
@@ -30,4 +30,43 @@ if (init('test') != '') {
 $result = json_decode(file_get_contents("php://input"), true);
 if (!is_array($result)) {
     die();
+}
+
+$eqLogics = eqLogic::byType('huaweilte');
+if (count($eqLogics) < 1) {
+    die();
+}
+
+if (isset($result['messages'])) {
+    foreach ($result['messages'] as $key => $datas) {
+        $message = trim(secureXSS($datas['message']));
+        $sender = trim(secureXSS($datas['sender']));
+
+        if (empty($message) or empty($sender)) {
+            continue;
+        }
+
+        $smsOk = false;
+        foreach ($eqLogics as $eqLogic) {
+            if (strpos($eqLogic->getConfiguration('authorizedSenders'), $sender) === false) {
+                continue;
+            }
+
+            foreach ($eqLogic->getCmd() as $eqLogicCmd) {
+                $smsOk = true;
+                log::add('huaweilte', 'info', __('Message de ', __FILE__) . $sender . ' : ' . $message);
+
+                $cmd = $eqLogicCmd->getEqlogic()->getCmd('info', 'smsLastMessage');
+                $cmd->event($message);
+
+                $cmd = $eqLogicCmd->getEqlogic()->getCmd('info', 'smsLastSender');
+                $cmd->event($sender);
+                break;
+            }
+        }
+
+        if (!$smsOk) {
+            log::add('huaweilte', 'info', __('Message d\'un numéro non autorisé ', __FILE__) . secureXSS($sender) . ' : ' . secureXSS($message));
+        }
+    }
 }

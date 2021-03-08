@@ -20,6 +20,8 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 
 class huaweilte extends eqLogic {
+    /*     * ***********************Methode static*************************** */
+
     public static function dependancy_info() {
         $return = array();
         $return['progress_file'] = jeedom::getTmpFolder(__CLASS__).'/dependance';
@@ -109,6 +111,46 @@ class huaweilte extends eqLogic {
         system::fuserk(55100);
 
         sleep(1);
+    }
+
+    /*     * *********************Méthodes d'instance************************* */
+
+    public function postSave() {
+        $cmd = $this->getCmd(null, 'smsUnread');
+        if (!is_object($cmd)) {
+            $cmd = new huaweilteCmd();
+            $cmd->setLogicalId('smsUnread');
+            $cmd->setIsVisible(1);
+            $cmd->setName(_('SMS non lu(s)'));
+        }
+        $cmd->setType('info');
+        $cmd->setSubType('numeric');
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->save();
+
+        $cmd = $this->getCmd(null, 'smsLastSender');
+        if (!is_object($cmd)) {
+            $cmd = new huaweilteCmd();
+            $cmd->setLogicalId('smsLastSender');
+            $cmd->setIsVisible(1);
+            $cmd->setName(_('Dernier expéditeur de SMS'));
+        }
+        $cmd->setType('info');
+        $cmd->setSubType('string');
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->save();
+
+        $cmd = $this->getCmd(null, 'smsLastMessage');
+        if (!is_object($cmd)) {
+            $cmd = new huaweilteCmd();
+            $cmd->setLogicalId('smsLastMessage');
+            $cmd->setIsVisible(1);
+            $cmd->setName(_('Dernier SMS'));
+        }
+        $cmd->setType('info');
+        $cmd->setSubType('string');
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->save();
     }
 }
 

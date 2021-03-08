@@ -29,6 +29,14 @@ except ImportError:
 	print('Error: importing module jeedom.jeedom')
 	sys.exit(1)
 
+def handleMessage(client, message):
+    if int(message['Smstat']) != 0:
+        return
+
+    logging.debug('SMS message : ' + str(message))
+    jeedom_com.add_changes('messages::'+str(message['Index']), {'sender' : message['Phone'], 'message' : message['Content']})
+    client.sms.set_read(message['Index'])
+
 def listen():
     jeedom_socket.open()
     logging.debug("Start listening...")
@@ -41,9 +49,15 @@ def listen():
             smsCount = client.sms.sms_count()
             logging.debug('SMS Count : ' + str(smsCount))
 
-            if smsCount.LocalUnread > 0:
+            if int(smsCount['LocalUnread']) > 0:
                 smsList = client.sms.get_sms_list()
                 logging.debug('SMS List : ' + str(smsList))
+
+                if int(smsList['Count']) == 1:
+                    handleMessage(client, smsList['Messages']['Message'])
+                else:
+                    for message in smsList['Messages']['Message']:
+                        handleMessage(client, message)
 
             time.sleep(0.5)
     except KeyboardInterrupt:
