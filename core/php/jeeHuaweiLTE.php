@@ -56,6 +56,10 @@ if (isset($result['messages'])) {
                 $smsOk = true;
                 log::add('huaweilte', 'info', __('Message de ', __FILE__) . $sender . ' : ' . $message);
 
+                if ($eqLogicCmd->askResponse($message)) {
+                    continue(3);
+                }
+
                 $cmd = $eqLogicCmd->getEqlogic()->getCmd('info', 'smsLastMessage');
                 $cmd->event($message);
 
