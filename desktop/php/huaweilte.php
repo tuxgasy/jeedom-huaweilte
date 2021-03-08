@@ -100,15 +100,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                     <label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
                                 </div>
                             </div>
-                            <br>
-
-                            <legend><i class="fas fa-cogs"></i> {{Paramètres}}</legend>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">{{Numéros d'expédteurs autorisés}}</label>
-                                <div class="col-sm-7">
-                                    <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="authorizedSenders" placeholder="{{Numéros d'expédteurs autorisés}}">
-                                </div>
-                            </div>
                         </div>
                         <div class="col-lg-6">
                             <legend><i class="fas fa-info"></i> {{Informations}}</legend>
@@ -124,16 +115,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
             </div>
 
             <div role="tabpanel" class="tab-pane" id="commandtab">
-                <a class="btn btn-default btn-sm pull-right cmdAction" data-action="add" style="margin-top:5px;"><i class="fas fa-plus-circle"></i> {{Ajouter une commande}}</a>
+                <a class="btn btn-default btn-sm pull-right cmdAction" data-action="add" style="margin-top:5px;"><i class="fas fa-plus-circle"></i> {{Ajouter un numéro}}</a>
                 <br><br>
                 <div class="table-responsive">
                     <table id="table_cmd" class="table table-bordered table-condensed">
                         <thead>
                             <tr>
-                                <th>{{Id}}</th>
                                 <th>{{Nom}}</th>
-                                <th>{{Type}}</th>
-                                <th>{{Options}}</th>
+                                <th>{{Utilisateur}}</th>
+                                <th>{{Numéro}}</th>
                                 <th>{{Paramètres}}</th>
                                 <th>{{Action}}</th>
                             </tr>

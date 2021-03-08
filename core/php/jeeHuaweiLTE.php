@@ -48,11 +48,11 @@ if (isset($result['messages'])) {
 
         $smsOk = false;
         foreach ($eqLogics as $eqLogic) {
-            if (strpos($eqLogic->getConfiguration('authorizedSenders'), $sender) === false) {
-                continue;
-            }
-
             foreach ($eqLogic->getCmd() as $eqLogicCmd) {
+                if (strpos($eqLogicCmd->getConfiguration('phonenumber'), $sender) === false) {
+                    continue;
+                }
+
                 $smsOk = true;
                 log::add('huaweilte', 'info', __('Message de ', __FILE__) . $sender . ' : ' . $message);
 

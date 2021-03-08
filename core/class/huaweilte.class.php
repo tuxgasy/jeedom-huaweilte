@@ -116,18 +116,6 @@ class huaweilte extends eqLogic {
     /*     * *********************Méthodes d'instance************************* */
 
     public function postSave() {
-        $cmd = $this->getCmd(null, 'smsUnread');
-        if (!is_object($cmd)) {
-            $cmd = new huaweilteCmd();
-            $cmd->setLogicalId('smsUnread');
-            $cmd->setIsVisible(1);
-            $cmd->setName(_('SMS non lu(s)'));
-        }
-        $cmd->setType('info');
-        $cmd->setSubType('numeric');
-        $cmd->setEqLogic_id($this->getId());
-        $cmd->save();
-
         $cmd = $this->getCmd(null, 'smsLastSender');
         if (!is_object($cmd)) {
             $cmd = new huaweilteCmd();
@@ -155,6 +143,19 @@ class huaweilte extends eqLogic {
 }
 
 class huaweilteCmd extends cmd {
+    public function dontRemoveCmd() {
+        if ($this->getSubType() == 'message') {
+            return false;
+        }
+        return true;
+    }
+
+    public function preSave() {
+        if ($this->getSubType() == 'message') {
+            $this->setDisplay('title_disable', 1);
+        }
+    }
+
     public function execute($_options = array()) {
         //
     }
