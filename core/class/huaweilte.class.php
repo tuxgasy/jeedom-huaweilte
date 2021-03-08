@@ -157,6 +157,20 @@ class huaweilteCmd extends cmd {
     }
 
     public function execute($_options = array()) {
-        //
+        $numbers = explode(';', $this->getConfiguration('phonenumber'));
+        $message = trim($_options['message']);
+
+        if (config::byKey('deviceurl', 'huaweilte', null) != null) {
+            $data = json_encode(array(
+                'apikey' => jeedom::getApiKey('huaweilte'),
+                'numbers' => $numbers,
+                'message' => $message,
+            ));
+
+            $socket = socket_create(AF_INET, SOCK_STREAM, 0);
+            socket_connect($socket, '127.0.0.1', config::byKey('socketport', 'huaweilte'));
+            socket_write($socket, $data, strlen($data));
+            socket_close($socket);
+        }
     }
 }

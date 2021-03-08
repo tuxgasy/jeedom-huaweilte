@@ -14,6 +14,7 @@
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import json
 import logging
 import os
 import signal
@@ -37,29 +38,55 @@ def handleMessage(client, message):
     jeedom_com.add_changes('messages::'+str(message['Index']), {'sender' : message['Phone'], 'message' : message['Content']})
     client.sms.set_read(message['Index'])
 
+def checkUnreadMessages(client):
+    smsCount = client.sms.sms_count()
+    logging.debug('SMS Count : ' + str(smsCount))
+
+    if int(smsCount['LocalUnread']) > 0:
+        smsList = client.sms.get_sms_list()
+        logging.debug('SMS List : ' + str(smsList))
+
+        if int(smsList['Count']) == 1:
+            handleMessage(client, smsList['Messages']['Message'])
+        else:
+            for message in smsList['Messages']['Message']:
+                handleMessage(client, message)
+
+def read_socket(client):
+    global JEEDOM_SOCKET_MESSAGE
+    if not JEEDOM_SOCKET_MESSAGE.empty():
+        logging.debug('Message received in socket JEEDOM_SOCKET_MESSAGE')
+        message = json.loads(jeedom_utils.stripped(JEEDOM_SOCKET_MESSAGE.get()))
+        if message['apikey'] != _apikey:
+            logging.error('Invalid apikey from socket : ' + str(message))
+            return
+
+        client.sms.send_sms(message['numbers'], message['message']);
+
 def listen():
     jeedom_socket.open()
     logging.debug("Start listening...")
 
     try:
         while 1:
-            connection = AuthorizedConnection(_device_url)
-            client = Client(connection)
-
-            smsCount = client.sms.sms_count()
-            logging.debug('SMS Count : ' + str(smsCount))
-
-            if int(smsCount['LocalUnread']) > 0:
-                smsList = client.sms.get_sms_list()
-                logging.debug('SMS List : ' + str(smsList))
-
-                if int(smsList['Count']) == 1:
-                    handleMessage(client, smsList['Messages']['Message'])
-                else:
-                    for message in smsList['Messages']['Message']:
-                        handleMessage(client, message)
-
             time.sleep(0.5)
+
+            try:
+                connection = AuthorizedConnection(_device_url)
+                client = Client(connection)
+            except Exception as e:
+                logging.error('Fail to connect on the device : ' + str(e))
+                continue
+
+            try:
+                read_socket(client)
+            except Exception as e:
+                logging.error('Exception on socket : ' + str(e))
+
+            try:
+                checkUnreadMessages(client)
+            except Exception as e:
+                logging.error('Fail to check unread sms : ' + str(e))
     except KeyboardInterrupt:
         shutdown()
 
