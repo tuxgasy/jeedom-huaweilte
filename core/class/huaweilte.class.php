@@ -157,7 +157,12 @@ class huaweilteCmd extends cmd {
     }
 
     public function execute($_options = array()) {
-        $numbers = explode(';', $this->getConfiguration('phonenumber'));
+        if (isset($_options['numbers'])) {
+            $numbers = $_options['numbers'];
+        } else {
+            $numbers = explode(';', $this->getConfiguration('phonenumber'));
+        }
+
         $message = trim($_options['message']);
 
         if (config::byKey('deviceurl', 'huaweilte', null) != null) {

@@ -56,8 +56,24 @@ if (isset($result['messages'])) {
                 $smsOk = true;
                 log::add('huaweilte', 'info', __('Message de ', __FILE__) . $sender . ' : ' . $message);
 
+                // Prise en charge de la commande ask
                 if ($eqLogicCmd->askResponse($message)) {
                     continue(3);
+                }
+
+                // Gestion des interactions
+                $params = array('plugin', 'huaweilte');
+                if ($eqLogicCmd->getConfiguration('user') != '') {
+                    $user = user::byId($eqLogicCmd->getConfiguration('user'));
+                    if (is_object($user)) {
+                        $params['profile'] = $user->getLogin();
+                    }
+                }
+                $params['reply_cmd'] = $eqLogicCmd;
+                $reply = interactQuery::tryToReply(trim($message), $params);
+                if (trim($reply['reply']) != '') {
+                    $eqLogicCmd->execute(array('message' => $reply['reply'], 'numbers' => array($sender)));
+                    log::add('huaweilte', 'info', __('Réponse : ', __FILE__) . $reply['reply']);
                 }
 
                 $cmd = $eqLogicCmd->getEqlogic()->getCmd('info', 'smsLastMessage');
