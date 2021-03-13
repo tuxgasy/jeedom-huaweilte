@@ -74,6 +74,7 @@ class huaweilte extends eqLogic {
         $cmd = '/usr/bin/python3 ' . $deamon_path . '/huaweilted.py';
         $cmd .= ' --deviceurl ' . config::byKey('deviceurl', __CLASS__);
         $cmd .= ' --socketport ' . config::byKey('socketport', __CLASS__);
+        $cmd .= ' --cycle ' . config::byKey('cycle', __CLASS__);
         $cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
         $cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/deamon.pid';
         $cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);

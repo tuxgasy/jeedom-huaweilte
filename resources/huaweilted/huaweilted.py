@@ -69,7 +69,7 @@ def listen():
 
     try:
         while 1:
-            time.sleep(0.5)
+            time.sleep(_cycle)
 
             try:
                 connection = AuthorizedConnection(_device_url)
@@ -87,6 +87,8 @@ def listen():
                 checkUnreadMessages(client)
             except Exception as e:
                 logging.error('Fail to check unread sms : ' + str(e))
+
+            client.user.logout()
     except KeyboardInterrupt:
         shutdown()
 
@@ -128,6 +130,7 @@ _device_url = 'http://192.168.8.1/'
 _pidfile = '/tmp/huaweilted.pid'
 _apikey = ''
 _callback = ''
+_cycle = 60
 
 parser = argparse.ArgumentParser(description='Huawei LTE Daemon for Jeedom plugin')
 parser.add_argument("--loglevel", help="Log Level for the daemon", type=str)
@@ -136,12 +139,13 @@ parser.add_argument("--deviceurl", help="Device URL", type=str)
 parser.add_argument("--pid", help="Pid file", type=str)
 parser.add_argument("--apikey", help="Apikey", type=str)
 parser.add_argument("--callback", help="Callback", type=str)
+parser.add_argument("--cycle", help="Cycle to send event", type=str)
 args = parser.parse_args()
 
 if args.loglevel:
     _log_level = args.loglevel
 if args.socketport:
-    _socket_port = args.socketport
+    _socket_port = int(args.socketport)
 if args.deviceurl:
     _device_url = args.deviceurl
 if args.pid:
@@ -150,8 +154,9 @@ if args.apikey:
     _apikey = args.apikey
 if args.callback:
     _callback = args.callback
+if args.cycle:
+    _cycle = float(args.cycle)
 
-_socket_port = int(_socket_port)
 jeedom_utils.set_log_level(_log_level)
 
 logging.info('Start demond')

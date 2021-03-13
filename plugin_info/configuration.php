@@ -38,5 +38,11 @@ if (!isConnect()) {
                 <input class="configKey form-control" data-l1key="socketport"/>
             </div>
         </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{Cycle (s)}}</label>
+            <div class="col-sm-7">
+                <input class="configKey form-control" data-l1key="cycle"/>
+            </div>
+        </div>
     </fieldset>
 </form>
