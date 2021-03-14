@@ -37,6 +37,16 @@ if (count($eqLogics) < 1) {
     die();
 }
 
+if (isset($result['cmd']) and isset($result['message'])) {
+    foreach ($eqLogics as $eqLogic) {
+        $cmd = $eqLogic->getCmd(null, $result['cmd']);
+        if (is_object($cmd)) {
+            $cmd->event($result['message']);
+        }
+    }
+    die();
+}
+
 if (isset($result['messages'])) {
     foreach ($result['messages'] as $key => $datas) {
         $message = trim(secureXSS($datas['message']));

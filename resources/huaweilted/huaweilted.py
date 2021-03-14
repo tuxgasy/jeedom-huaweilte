@@ -79,6 +79,18 @@ def listen():
                 continue
 
             try:
+                signal = client.monitoring.status()
+                jeedom_com.send_change_immediate({'cmd' : 'signal', 'message' : signal['SignalIcon']});
+            except Exception as e:
+                logging.error('Fail to check signal : ' + str(e))
+
+            try:
+                data = client.net.current_plmn()
+                jeedom_com.send_change_immediate({'cmd' : 'operatorName', 'message' : data['FullName']});
+            except Exception as e:
+                logging.error('Fail to check current plmn : ' + str(e))
+
+            try:
                 read_socket(client)
             except Exception as e:
                 logging.error('Exception on socket : ' + str(e))

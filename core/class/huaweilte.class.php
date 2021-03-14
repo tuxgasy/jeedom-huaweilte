@@ -117,12 +117,38 @@ class huaweilte extends eqLogic {
     /*     * *********************Méthodes d'instance************************* */
 
     public function postSave() {
+        $cmd = $this->getCmd(null, 'signal');
+        if (!is_object($cmd)) {
+            $cmd = new huaweilteCmd();
+            $cmd->setLogicalId('signal');
+            $cmd->setIsVisible(1);
+            $cmd->setName(__('Signal', __FILE__));
+        }
+        $cmd->setType('info');
+        $cmd->setSubType('numeric');
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->setConfiguration('minValue', 0);
+        $cmd->setConfiguration('maxValue', 5);
+        $cmd->save();
+
+        $cmd = $this->getCmd(null, 'operatorName');
+        if (!is_object($cmd)) {
+            $cmd = new huaweilteCmd();
+            $cmd->setLogicalId('operatorName');
+            $cmd->setIsVisible(1);
+            $cmd->setName(__('Operateur', __FILE__));
+        }
+        $cmd->setType('info');
+        $cmd->setSubType('string');
+        $cmd->setEqLogic_id($this->getId());
+        $cmd->save();
+
         $cmd = $this->getCmd(null, 'smsLastSender');
         if (!is_object($cmd)) {
             $cmd = new huaweilteCmd();
             $cmd->setLogicalId('smsLastSender');
             $cmd->setIsVisible(1);
-            $cmd->setName(_('Dernier expéditeur de SMS'));
+            $cmd->setName(__('Dernier expéditeur de SMS', __FILE__));
         }
         $cmd->setType('info');
         $cmd->setSubType('string');
@@ -134,7 +160,7 @@ class huaweilte extends eqLogic {
             $cmd = new huaweilteCmd();
             $cmd->setLogicalId('smsLastMessage');
             $cmd->setIsVisible(1);
-            $cmd->setName(_('Dernier SMS'));
+            $cmd->setName(__('Dernier SMS', __FILE__));
         }
         $cmd->setType('info');
         $cmd->setSubType('string');
