@@ -23,6 +23,7 @@ import time
 
 from huawei_lte_api.AuthorizedConnection import AuthorizedConnection
 from huawei_lte_api.Client import Client
+from huawei_lte_api.exceptions import ResponseErrorNotSupportedException
 
 try:
     from jeedom.jeedom import *
@@ -100,7 +101,12 @@ def listen():
             except Exception as e:
                 logging.error('Fail to check unread sms : ' + str(e))
 
-            client.user.logout()
+            try:
+                client.user.logout()
+            except ResponseErrorNotSupportedException as e:
+                pass
+            except Exception as e:
+                logging.error('Fail to logout : ' + str(e))
     except KeyboardInterrupt:
         shutdown()
 
